@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_printf.h"
+/* #include "ft_printf.h"
 
 int	ft_formats(va_list args, const char format)
 {
@@ -32,28 +32,110 @@ int	ft_formats(va_list args, const char format)
 	else if (format == '%')
 		print_length += ft_printpercent();
 	return (print_length);
+} */
+
+
+#include <unistd.h>
+#include <stdarg.h>
+#include <stdio.h>
+
+int ft_char(int c)
+{
+    write(1,&c,1);
+    return (1);
+}
+
+int ft_str(char *str)
+{
+	int i;
+
+	i = 0;
+	if (!*str)
+		ft_str("(null)");
+    while (*str)
+		i += ft_char(*str++);
+    return (i);
+}
+
+int ft_pointer(unsigned long long ptr)
+{
+	static int len;
+	
+	if (ptr == 0)
+	{
+		len += ft_char('0');
+	}
+	if (ptr >= 16)
+	{
+		ft_pointer(ptr / 16);
+		ft_pointer(ptr % 16);
+	}
+	else
+		len += ft_char("0123456789abcdef"[ptr]);
+	return (len);
+}
+
+int ft_format(va_list args,char format)
+{
+	int	len;
+
+	len = 0;
+	if (format == 'c')
+		len += ft_char(va_arg(args,int));
+	else if (format == 'd' || format == 'i')
+		//integer yaz
+		printf("integer yaz");
+	else if (format == 's')
+		len += ft_str(va_arg(args,char *));
+	else if (format == 'p')
+	{
+		len += ft_char('0');
+		len += ft_char('x');
+		len += ft_pointer(va_arg(args,unsigned long long));
+	}
+	else if (format == 'u')
+		//unsigned int
+		printf("unsigned yaz");
+	else if (format == 'x')
+		//küçük harf hexadecimal
+		printf("hex yaz");
+	else if (format == 'X')
+		//büyük harf hexadecimal
+		printf("HEX yaz");
+	else if (format == '%')
+		//% işareti yazdır
+		printf("yüzde yaz");
+	return (len);
 }
 
 int	ft_printf(const char *str, ...)
 {
+	int		len;
 	va_list	args;
-	int		count;
-	char	*k;
 
-	k = 0;
-	count = 0;
+	len = 0;
 	va_start(args, str);
 	while (*str)
 	{
 		if (*str == '%')
 		{
 			str++;
-			count += ft_printfr(str, args, k);
+			len += ft_format(args,*str);
 		}
 		else
-			count += pc(*str, 0, 0);
+			len += ft_char(*str);
 		str++;
 	}
 	va_end(args);
-	return (count);
+	return (len);
+}
+
+int main(void)
+{
+	unsigned long long a;
+
+	a = 5;
+
+	printf("%d\n",printf("%p\n",&a));
+	printf("%d\n",ft_printf("%p\n",&a));
 }
