@@ -61,10 +61,6 @@ int ft_pointer(unsigned long long ptr)
 {
 	static int len;
 	
-	if (ptr == 0)
-	{
-		len += ft_char('0');
-	}
 	if (ptr >= 16)
 	{
 		ft_pointer(ptr / 16);
