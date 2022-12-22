@@ -10,39 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-/* #include "ft_printf.h"
-
-int	ft_formats(va_list args, const char format)
-{
-	int	print_length;
-
-	print_length = 0;
-	if (format == 'c')
-		print_length += ft_printchar(va_arg(args, int));
-	else if (format == 's')
-		print_length += ft_printstr(va_arg(args, char *));
-	else if (format == 'p')
-		print_length += ft_print_ptr(va_arg(args, unsigned long long));
-	else if (format == 'd' || format == 'i')
-		print_length += ft_printnbr(va_arg(args, int));
-	else if (format == 'u')
-		print_length += ft_print_unsigned(va_arg(args, unsigned int));
-	else if (format == 'x' || format == 'X')
-		print_length += ft_print_hex(va_arg(args, unsigned int), format);
-	else if (format == '%')
-		print_length += ft_printpercent();
-	return (print_length);
-} */
-
-
-#include <unistd.h>
-#include <stdarg.h>
-#include <stdio.h>
+#include "ft_printf.h"
 
 int ft_char(int c)
 {
-    write(1,&c,1);
-    return (1);
+    return (write(1,&c,1));
 }
 
 int ft_str(char *str)
@@ -50,24 +22,70 @@ int ft_str(char *str)
 	int i;
 
 	i = 0;
-	if (!*str)
-		ft_str("(null)");
+	if (!str)
+			return (ft_str("(null)"));
     while (*str)
 		i += ft_char(*str++);
     return (i);
 }
 
-int ft_pointer(unsigned long long ptr)
+int ft_len_nbr(unsigned long long int nbr,unsigned long long int base,int mod)
 {
-	static int len;
-	
-	if (ptr >= 16)
+	int len;
+
+	len = 0;
+	if (mod == 0 && nbr == 0)
+		len += 1;
+	if (mod == 1 && (int)nbr <= 0)
 	{
-		ft_pointer(ptr / 16);
-		ft_pointer(ptr % 16);
+		nbr = -nbr;
+		len += 1;
+	}
+	while (nbr)
+	{
+		nbr = nbr / base,
+		len++;
+	}
+	return (len);
+}
+
+void ft_nbr(unsigned long long int nbr,unsigned long long int base,char *str,int mod)
+{
+	if (mod == 1 && (int)nbr < 0)
+	{
+		nbr *= -1;
+		ft_char('-');
+	}
+	if (nbr >= base)
+	{
+		ft_nbr(nbr / base,base,str, mod);
+		ft_nbr(nbr % base,base,str, mod);
 	}
 	else
-		len += ft_char("0123456789abcdef"[ptr]);
+		ft_char(str[nbr]);
+}
+
+int ft_hex(unsigned long long int nbr,char format,int base,int mod)
+{
+	int len;
+
+	len = 0;
+	if (format == 'x')
+		ft_nbr(nbr,base,"0123456789abcdef" ,0 );
+	else if(format == 'X')
+		ft_nbr(nbr,base,"0123456789ABCDEF", 0);
+	else if(format == 'u')
+		ft_nbr(nbr,base,"0123456789", 0);
+	else if(format == 'd' || format == 'i')
+		ft_nbr(nbr,base,"0123456789",1);
+	else if(format == 'p')
+	{
+		if (!nbr)
+			return ft_str("(nil)");
+		len += ft_str("0x");
+		ft_nbr(nbr,base,"0123456789abcdef",2);
+	}
+	len += ft_len_nbr(nbr,base,mod);
 	return (len);
 }
 
@@ -79,28 +97,17 @@ int ft_format(va_list args,char format)
 	if (format == 'c')
 		len += ft_char(va_arg(args,int));
 	else if (format == 'd' || format == 'i')
-		//integer yaz
-		printf("integer yaz");
+		len += ft_hex(va_arg(args,int),format,10,1);
 	else if (format == 's')
 		len += ft_str(va_arg(args,char *));
 	else if (format == 'p')
-	{
-		len += ft_char('0');
-		len += ft_char('x');
-		len += ft_pointer(va_arg(args,unsigned long long));
-	}
+		len += ft_hex(va_arg(args,unsigned long long int),format,16, 2);
 	else if (format == 'u')
-		//unsigned int
-		printf("unsigned yaz");
-	else if (format == 'x')
-		//küçük harf hexadecimal
-		printf("hex yaz");
-	else if (format == 'X')
-		//büyük harf hexadecimal
-		printf("HEX yaz");
+		len += ft_hex(va_arg(args,unsigned int),format,10, 0);
+	else if (format == 'x' || format == 'X')
+		len += ft_hex(va_arg(args,unsigned int),format,16, 0);
 	else if (format == '%')
-		//% işareti yazdır
-		printf("yüzde yaz");
+		len += ft_char('%');
 	return (len);
 }
 
@@ -124,14 +131,4 @@ int	ft_printf(const char *str, ...)
 	}
 	va_end(args);
 	return (len);
-}
-
-int main(void)
-{
-	unsigned long long a;
-
-	a = 5;
-
-	printf("%d\n",printf("%p\n",&a));
-	printf("%d\n",ft_printf("%p\n",&a));
 }
