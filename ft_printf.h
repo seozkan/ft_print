@@ -13,8 +13,13 @@
 #ifndef FT_PRINTF_H
 # define FT_PRINTF_H
 
-#include <unistd.h>
-#include <stdarg.h>
+# include <stdarg.h>
+# include <unistd.h>
 
+int	ft_putchar(int c);
+int	ft_putstr(char *str);
+int	ft_putnbr(unsigned long long nbr, int base, char *str, int *nbr_list);
+int	ft_nbr(unsigned long long nbr, int base, char *str, int mod);
+int	ft_format(va_list args, char format);
 int	ft_printf(const char *str, ...);
 #endif
