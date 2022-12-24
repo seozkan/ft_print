@@ -6,7 +6,7 @@
 /*   By: seozkan <seozkan@student.42kocaeli.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/19 13:42:35 by seozkan           #+#    #+#             */
-/*   Updated: 2022/12/24 17:22:37 by seozkan          ###   ########.fr       */
+/*   Updated: 2022/12/24 17:34:15 by seozkan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,14 +19,14 @@ int	ft_putchar(int c)
 
 int	ft_putstr(char *str)
 {
-	int	i;
+	int	len;
 
-	i = 0;
+	len = 0;
 	if (!str)
 		return (ft_putstr("(null)"));
 	while (*str)
-		i += ft_putchar(*str++);
-	return (i);
+		len += ft_putchar(*str++);
+	return (len);
 }
 
 int	ft_nbr(unsigned long long nbr, int base, char *str, int mod)
