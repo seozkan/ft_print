@@ -6,27 +6,27 @@
 #    By: seozkan <seozkan@student.42kocaeli.com.    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/12/19 10:17:13 by seozkan           #+#    #+#              #
-#    Updated: 2022/12/19 12:44:04 by seozkan          ###   ########.fr        #
+#    Updated: 2022/12/24 17:24:21 by seozkan          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = libftprintf.a
+FLAG = -Wall -Wextra -Werror
+SRC = $(shell find . -name "ft_*.c")
 
-SOURCES = ft_printf.c ft_printf_utils.c
-
-OBJECTS = $(SOURCES:.c=.o)
-
-CC = gcc
-RM = rm -f
-CFLAGS = -Wall -Wextra -Werror
 all: $(NAME)
-$(NAME): $(OBJECTS)
-	$(AR) -r $@ $?
-%.o: %.c
-	$(CC) -c $(CFLAGS) $?
+
+$(NAME):
+	@gcc $(FLAG) -c $(SRC)
+	@ar rc $(NAME) *.o
+	@echo "\n\033[92m $@ built ✅\033[0m\n"
 clean:
-	$(RM) $(OBJECTS) 
+	@rm -f  *.o
+	@echo "\n\033[36m object files removed 👋\033[0m\n"
 fclean: clean
-	$(RM) $(NAME)
+	@rm -f $(NAME)
+	@echo "\n\033[36m executables removed 👋\033[0m\n"
+
 re: fclean all
-.PHONY: all clean fclean re
+
+.PHONY : all clean fclean re
