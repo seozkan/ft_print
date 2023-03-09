@@ -6,27 +6,36 @@
 #    By: seozkan <seozkan@student.42kocaeli.com.    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/12/19 10:17:13 by seozkan           #+#    #+#              #
-#    Updated: 2022/12/24 17:24:21 by seozkan          ###   ########.fr        #
+#    Updated: 2023/02/25 14:15:39 by seozkan          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = libftprintf.a
-FLAG = -Wall -Wextra -Werror
-SRC = $(shell find . -name "ft_*.c")
+CC = @gcc
+RM = @rm -f
+AR = ar rcs
+FLAGS = -Wall -Wextra -Werror
+
+YELLOW = \033[33;49;1m
+END = \033[0;0m
+
+SRC = ft_printf.c
+
+OBJ = $(SRC:.c=.o)
 
 all: $(NAME)
 
 $(NAME):
-	@gcc $(FLAG) -c $(SRC)
-	@ar rc $(NAME) *.o
-	@echo "\n\033[92m $@ built ✅\033[0m\n"
+	$(CC) $(FLAGS) -c $(SRC)
+	$(AR) $(NAME) *.o
+	@echo "$(YELLOW)${NAME} ✔️$(END)"
+
 clean:
-	@rm -f  *.o
-	@echo "\n\033[36m object files removed 👋\033[0m\n"
+	${RM} ${OBJ}
+
 fclean: clean
-	@rm -f $(NAME)
-	@echo "\n\033[36m executables removed 👋\033[0m\n"
+	${RM} ${NAME}
 
 re: fclean all
 
-.PHONY : all clean fclean re
+.PHONY: all clean fclean re bonus
